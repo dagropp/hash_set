@@ -46,13 +46,13 @@ public abstract class SimpleHashSet implements SimpleSet {
      * @return The lower load factor of the table.
      */
     protected float getLowerLoadFactor() {
-        return 0;
+        return DEFAULT_LOWER_CAPACITY;
     }
 
     /**
      * @return The higher load factor of the table.
      */
     protected float getUpperLoadFactor() {
-        return 0;
+        return DEFAULT_HIGHER_CAPACITY;
     }
 }
