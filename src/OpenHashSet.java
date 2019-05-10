@@ -1,11 +1,16 @@
+import java.security.SecureRandom;
+
 /**
  * A hash-set based on chaining. Extends SimpleHashSet. Note: the capacity of a chaining based hash-set is simply the
  * number of buckets (the length of the array of lists)
  */
 public class OpenHashSet extends SimpleHashSet {
+    /* Class members - variables */
     private LinkedListContainer[] table = new LinkedListContainer[INITIAL_CAPACITY];
     private int elementCounter = 0;
-    private int resizeCounter = 0;
+    private int resizeCounter = 0; // !!!DELETE LATER!!!
+
+    /* Constructors */
 
     /**
      * A default constructor. Constructs a new, empty table with default initial capacity (16),
@@ -38,6 +43,8 @@ public class OpenHashSet extends SimpleHashSet {
             this.add(item);
     }
 
+    /* Public instance Methods */
+
     /**
      * Add a specified element to the set if it's not already in it.
      *
@@ -45,7 +52,7 @@ public class OpenHashSet extends SimpleHashSet {
      * @return False iff newValue already exists in the set.
      */
     public boolean add(String newValue) {
-        int index = this.setIndex(newValue); // Sets array index for string input with dedicated method.
+        int index = this.clamp(this.hash(newValue)); // Clamps string hash code to fit array index.
         // If item exists in table, do nothing and return false.
         if (this.itemInList(newValue, index))
             return false;
@@ -68,7 +75,7 @@ public class OpenHashSet extends SimpleHashSet {
      * @return True iff searchVal is found in the set.
      */
     public boolean contains(String searchVal) {
-        int index = this.setIndex(searchVal); // Sets array index for string input with dedicated method.
+        int index = this.clamp(this.hash(searchVal)); // Clamps string hash code to fit array index.
         return this.itemInList(searchVal, index); // Returns boolean from dedicated method that checks if item exists.
     }
 
@@ -79,7 +86,7 @@ public class OpenHashSet extends SimpleHashSet {
      * @return True iff toDelete is found and deleted.
      */
     public boolean delete(String toDelete) {
-        int index = this.setIndex(toDelete); // Sets array index for string input with dedicated method.
+        int index = this.clamp(this.hash(toDelete)); // Clamps string hash code to fit array index.
         if (this.table[index].findAndDelete(toDelete)) {
             // If after deletion, list bucket is empty, nullify index.
             if (this.table[index].getList().isEmpty())
@@ -108,15 +115,7 @@ public class OpenHashSet extends SimpleHashSet {
         return this.elementCounter;
     }
 
-    /**
-     * Sets array index for String input, using the input's HashCode % size of the table.
-     *
-     * @param item String value to assign array index to.
-     * @return Index value in table's range for the input.
-     */
-    private int setIndex(String item) {
-        return Math.abs(item.hashCode()) % table.length;
-    }
+    /* Private instance Methods */
 
     /**
      * Checks if item exists on specific list in index.
@@ -177,7 +176,7 @@ public class OpenHashSet extends SimpleHashSet {
      */
     private void addOldTableToNewTable(String[] tempTable) {
         for (String item : tempTable) {
-            int index = this.setIndex(item); // Sets array index for string input with dedicated method.
+            int index = this.clamp(this.hash(item)); // Clamps string hash code to fit array index.
             // If index is null, creates new linked list container.
             if (this.table[index] == null)
                 this.table[index] = new LinkedListContainer(item);
@@ -185,6 +184,14 @@ public class OpenHashSet extends SimpleHashSet {
             else
                 this.table[index].addItem(item);
         }
+    }
+
+    /**
+     * @param item String to hash.
+     * @return Hash code for String input.
+     */
+    private int hash(String item) {
+        return item.hashCode();
     }
 
     @Override

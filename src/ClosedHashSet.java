@@ -7,7 +7,7 @@ public class ClosedHashSet extends SimpleHashSet {
      * upper load factor (0.75) and lower load factor (0.25).
      */
     public ClosedHashSet() {
-
+        super();
     }
 
     /**
@@ -17,7 +17,7 @@ public class ClosedHashSet extends SimpleHashSet {
      * @param lowerLoadFactor The lower load factor of the hash table.
      */
     public ClosedHashSet(float upperLoadFactor, float lowerLoadFactor) {
-
+        super(upperLoadFactor, lowerLoadFactor);
     }
 
     /**
@@ -28,7 +28,8 @@ public class ClosedHashSet extends SimpleHashSet {
      * @param data Values to add to the set.
      */
     public ClosedHashSet(String[] data) {
-
+        super();
+        // CODE FOR "ADD" FUNCTION.
     }
 
     /**

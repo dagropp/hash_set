@@ -2,14 +2,18 @@
  * A superclass for implementations of hash-sets implementing the SimpleSet interface.
  */
 public abstract class SimpleHashSet implements SimpleSet {
+    /* Class members - constant variables */
     // Describes the higher load factor of a newly created hash set
     protected static final float DEFAULT_HIGHER_CAPACITY = 0.75f;
     // Describes the lower load factor of a newly created hash set
     protected static final float DEFAULT_LOWER_CAPACITY = 0.25f;
     // Describes the capacity of a newly created hash set.
     protected static final int INITIAL_CAPACITY = 16;
+    /* Class members - variables */
     private float upperLoadFactor;
     private float lowerLoadFactor;
+
+    /* Constructors */
 
     /**
      * Constructs a new hash set with the default capacities given in
@@ -31,10 +35,14 @@ public abstract class SimpleHashSet implements SimpleSet {
         this.lowerLoadFactor = lowerLoadFactor;
     }
 
+    /* Public instance Methods */
+
     /**
      * @return The current capacity (number of cells) of the table.
      */
     public abstract int capacity();
+
+    /* Protected instance Methods */
 
     /**
      * Clamps hashing indices to fit within the current table capacity (see the exercise description for details).
@@ -43,7 +51,7 @@ public abstract class SimpleHashSet implements SimpleSet {
      * @return an index properly clamped.
      */
     protected int clamp(int index) {
-        return 0;
+        return index & (this.capacity() - 1);
     }
 
     /**
@@ -77,6 +85,8 @@ public abstract class SimpleHashSet implements SimpleSet {
     protected boolean shouldDecrease() {
         return this.getCurrentLoadFactor() <= this.lowerLoadFactor;
     }
+
+    /* Private instance Methods */
 
     /**
      * @return The current load factor of the table.
