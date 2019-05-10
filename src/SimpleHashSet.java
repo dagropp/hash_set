@@ -8,13 +8,16 @@ public abstract class SimpleHashSet implements SimpleSet {
     protected static final float DEFAULT_LOWER_CAPACITY = 0.25f;
     // Describes the capacity of a newly created hash set.
     protected static final int INITIAL_CAPACITY = 16;
+    private float upperLoadFactor;
+    private float lowerLoadFactor;
 
     /**
      * Constructs a new hash set with the default capacities given in
      * DEFAULT_LOWER_CAPACITY and DEFAULT_HIGHER_CAPACITY.
      */
     protected SimpleHashSet() {
-
+        this.upperLoadFactor = DEFAULT_HIGHER_CAPACITY;
+        this.lowerLoadFactor = DEFAULT_LOWER_CAPACITY;
     }
 
     /**
@@ -24,7 +27,8 @@ public abstract class SimpleHashSet implements SimpleSet {
      * @param lowerLoadFactor the lower load factor before rehashing.
      */
     protected SimpleHashSet(float upperLoadFactor, float lowerLoadFactor) {
-
+        this.upperLoadFactor = upperLoadFactor;
+        this.lowerLoadFactor = lowerLoadFactor;
     }
 
     /**
@@ -46,13 +50,38 @@ public abstract class SimpleHashSet implements SimpleSet {
      * @return The lower load factor of the table.
      */
     protected float getLowerLoadFactor() {
-        return DEFAULT_LOWER_CAPACITY;
+        return this.lowerLoadFactor;
     }
 
     /**
      * @return The higher load factor of the table.
      */
     protected float getUpperLoadFactor() {
-        return DEFAULT_HIGHER_CAPACITY;
+        return this.upperLoadFactor;
+    }
+
+    /**
+     * Checks if table capacity should increase, if current load factor is higher or equal to upper load factor.
+     *
+     * @return True if (current load factor >= upper load factor): should increase. False otherwise.
+     */
+    protected boolean shouldIncrease() {
+        return this.getCurrentLoadFactor() >= this.upperLoadFactor;
+    }
+
+    /**
+     * Checks if table capacity should decrease, if current load factor is lower or equal to lower load factor.
+     *
+     * @return True if (current load factor <= lower load factor): should decrease. False otherwise.
+     */
+    protected boolean shouldDecrease() {
+        return this.getCurrentLoadFactor() <= this.lowerLoadFactor;
+    }
+
+    /**
+     * @return The current load factor of the table.
+     */
+    private float getCurrentLoadFactor() {
+        return (float) this.size() / (float) this.capacity();
     }
 }
