@@ -1,5 +1,3 @@
-import java.security.SecureRandom;
-
 /**
  * A hash-set based on chaining. Extends SimpleHashSet. Note: the capacity of a chaining based hash-set is simply the
  * number of buckets (the length of the array of lists)
@@ -8,7 +6,6 @@ public class OpenHashSet extends SimpleHashSet {
     /* Class members - variables */
     private LinkedListContainer[] table = new LinkedListContainer[INITIAL_CAPACITY];
     private int elementCounter = 0;
-    private int resizeCounter = 0; // !!!DELETE LATER!!!
 
     /* Constructors */
 
@@ -131,24 +128,9 @@ public class OpenHashSet extends SimpleHashSet {
         return false;
     }
 
-    /**
-     * Attempts to resize the table. Checks if resize is needed (increase or decrease), and if so creates new table,
-     * its capacity based on (elements number / load factor), and adds all the previous elements to the new table.
-     *
-     * @param shouldResize Based on shouldIncrease/shouldDecrease methods from SimpleHashSet,
-     *                     that checks if resizing is needed.
-     * @param loadFactor   Which load factor to base new capacity by:
-     *                     Lower load factor for increasing size, Upper load factor for decreasing size.
-     */
-    private void attemptResize(boolean shouldResize, float loadFactor) {
-        // Checks if resize is needed, based on shouldIncrease/shouldDecrease methods from SimpleHashSet.
-        if (shouldResize) {
-            this.resizeCounter++; // !!!DELETE LATER!!!
-            int newCapacity = Math.round(this.size() / loadFactor); // New capacity based on (size / load factor).
-            String[] tempTable = this.assignTableElementsToArray(); // Assign table elements to array.
-            this.table = new LinkedListContainer[newCapacity]; // Recreate empty hash table.
-            this.addOldTableToNewTable(tempTable); // Adds previous table elements to new table.
-        }
+    @Override
+    protected void newTable(int size) {
+        this.table = new LinkedListContainer[size];
     }
 
     /**
@@ -156,7 +138,8 @@ public class OpenHashSet extends SimpleHashSet {
      *
      * @return Array that contains all String elements in the current table.
      */
-    private String[] assignTableElementsToArray() {
+    @Override
+    protected String[] assignTableElementsToArray() {
         String[] tempTable = new String[this.size()]; // Assign new array the size of total elements in table.
         int index = 0;
         for (LinkedListContainer list : this.table) // Go over all the list buckets of the table.
@@ -174,7 +157,8 @@ public class OpenHashSet extends SimpleHashSet {
      *
      * @param tempTable Array representation of the previous table String elements before resizing.
      */
-    private void addOldTableToNewTable(String[] tempTable) {
+    @Override
+    protected void addNoDuplicatesArray(String[] tempTable) {
         for (String item : tempTable) {
             int index = this.clamp(this.hash(item)); // Clamps string hash code to fit array index.
             // If index is null, creates new linked list container.
@@ -201,6 +185,6 @@ public class OpenHashSet extends SimpleHashSet {
             if (this.table[i] != null)
                 result += "Index " + i + ": " + this.table[i] + "\n";
         return result + "\nTOTAL CELLS: " + this.capacity() + " / TOTAL ELEMENTS: " + this.size() +
-                " / LOAD FACTOR: " + (float) this.size() / (float) this.capacity() + " / TOTAL RESIZINGS: " + this.resizeCounter;
+                " / LOAD FACTOR: " + (float) this.size() / (float) this.capacity();
     }
 }

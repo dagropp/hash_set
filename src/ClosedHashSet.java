@@ -2,6 +2,9 @@
  * A hash-set based on closed-hashing with quadratic probing. Extends SimpleHashSet
  */
 public class ClosedHashSet extends SimpleHashSet {
+    private String[] table = new String[INITIAL_CAPACITY];
+    private int elementCounter = 0;
+
     /**
      * A default constructor. Constructs a new, empty table with default initial capacity (16),
      * upper load factor (0.75) and lower load factor (0.25).
@@ -29,7 +32,8 @@ public class ClosedHashSet extends SimpleHashSet {
      */
     public ClosedHashSet(String[] data) {
         super();
-        // CODE FOR "ADD" FUNCTION.
+        for (String item : data)
+            this.add(item);
     }
 
     /**
@@ -39,7 +43,18 @@ public class ClosedHashSet extends SimpleHashSet {
      * @return False iff newValue already exists in the set.
      */
     public boolean add(String newValue) {
-        return true;
+        for (int i = 0; i < this.table.length; i++) {
+            int index = this.clamp(this.hash(newValue, i));
+            if (this.table[index] == null) {
+                this.table[index] = newValue;
+                this.elementCounter++;
+                this.resize(this.shouldIncrease());
+                return true;
+            } else if (this.table[index].equals(newValue))
+                return false;
+        }
+//        this.attemptResize(true, this.getLowerLoadFactor());
+        return false;
     }
 
     /**
@@ -49,7 +64,14 @@ public class ClosedHashSet extends SimpleHashSet {
      * @return True iff searchVal is found in the set.
      */
     public boolean contains(String searchVal) {
-        return true;
+        for (int i = 0; i < this.table.length; i++) {
+            int index = this.clamp(this.hash(searchVal, i));
+            if (this.table[index].equals(searchVal))
+                return true;
+            else if (this.table[index] == null)
+                return false;
+        }
+        return false;
     }
 
     /**
@@ -66,7 +88,7 @@ public class ClosedHashSet extends SimpleHashSet {
      * @return The number of elements currently in the set.
      */
     public int size() {
-        return 0;
+        return this.elementCounter;
     }
 
     /**
@@ -75,6 +97,67 @@ public class ClosedHashSet extends SimpleHashSet {
      * @return The current capacity (number of cells) of the table.
      */
     public int capacity() {
-        return 0;
+        return this.table.length;
+    }
+
+    private int hash(String item, int index) {
+        return item.hashCode() + ((index + index * index) / 2);
+    }
+
+    /**
+     * Creates an array representation of the current table elements (no duplicates, no null).
+     *
+     * @return Array that contains all String elements in the current table.
+     */
+    @Override
+    protected String[] assignTableElementsToArray() {
+        String[] tempTable = new String[this.size()]; // Assign new array the size of total elements in table.
+        int index = 0;
+        for (String item : this.table) // Go over all the String items of the table.
+            // If index not null, assign String to the result array.
+            if (item != null) {
+                tempTable[index] = item;
+                index++;
+            }
+        return tempTable;
+    }
+
+    @Override
+    protected void addNoDuplicatesArray(String[] tempTable) {
+        this.elementCounter = 0;
+        for (String item : tempTable) {
+//            for (int i = 0; i < this.table.length; i++) {
+//                int index = this.clamp(this.hash(item, i));
+//                if (this.table[index] == null) {
+//                    this.table[index] = item;
+//                    break;
+//                }
+//            }
+        this.add(item);
+        }
+    }
+
+    @Override
+    protected void newTable(int size) {
+        this.table = new String[size];
+    }
+
+    private void resize(boolean shouldResize) {
+        if (shouldResize) {
+            int newSize = this.table.length * 2; // Which size to increase table to??
+            String[] previousTable = this.assignTableElementsToArray();
+            this.newTable(newSize);
+            this.addNoDuplicatesArray(previousTable);
+        }
+    }
+
+    @Override
+    public String toString() {
+        String result = "TABLE CONTENT:\n";
+        for (int i = 0; i < this.table.length; i++)
+            if (this.table[i] != null)
+                result += "INDEX " + i + ": " + this.table[i] + "\n";
+        return result + "\nELEMENTS: " + this.size() + " CAPACITY: " + this.capacity() +
+                " LOAD FACTOR: " + (float) this.size() / (float) this.capacity();
     }
 }
