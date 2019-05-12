@@ -83,30 +83,8 @@ public abstract class SimpleHashSet implements SimpleSet {
      * @return True if (current load factor < lower load factor): should decrease. False otherwise.
      */
     protected boolean shouldDecrease() {
-        return this.getCurrentLoadFactor() < this.lowerLoadFactor;
+        return this.getCurrentLoadFactor() < this.lowerLoadFactor && this.capacity() > 1;
     }
-
-    /**
-     * Attempts to resize the table. Checks if resize is needed (increase or decrease), and if so creates new table,
-     * its capacity based on (elements number / load factor), and adds all the previous elements to the new table.
-     *
-     * @param shouldResize Based on shouldIncrease/shouldDecrease methods, that checks if resizing is needed.
-     * @param loadFactor   Which load factor to base new capacity by:
-     *                     Lower load factor for increasing, Upper load factor for decreasing.
-     */
-    protected void attemptResize(boolean shouldResize, float loadFactor) {
-        // Checks if resize is needed, based on shouldIncrease/shouldDecrease methods from SimpleHashSet.
-        if (shouldResize) {
-            int newCapacity = Math.round(this.size() / loadFactor); // New capacity based on (size / load factor).
-            this.resizeTable(newCapacity); // Recreate empty table and add previous elements to new table.
-        }
-    }
-
-    protected abstract String[] assignTableElementsToArray();
-
-    protected abstract void addNoDuplicatesArray(String[] tempTable);
-
-    protected abstract void newTable(int size);
 
     /* Private instance Methods */
 
@@ -115,11 +93,5 @@ public abstract class SimpleHashSet implements SimpleSet {
      */
     private float getCurrentLoadFactor() {
         return (float) this.size() / (float) this.capacity();
-    }
-
-    private void resizeTable(int size) {
-        String[] previousTable = this.assignTableElementsToArray(); // Assign table elements to array.
-        this.newTable(size);
-        this.addNoDuplicatesArray(previousTable);
     }
 }
