@@ -11,7 +11,7 @@ public class CollectionFacadeSet implements SimpleSet {
      * @param collection The Collection to wrap.
      */
     public CollectionFacadeSet(java.util.Collection<String> collection) {
-
+        this.collection = collection;
     }
 
     /**
@@ -21,7 +21,7 @@ public class CollectionFacadeSet implements SimpleSet {
      * @return False iff newValue already exists in the set.
      */
     public boolean add(String newValue) {
-        return true;
+        return this.collection.add(newValue);
     }
 
     /**
@@ -31,7 +31,7 @@ public class CollectionFacadeSet implements SimpleSet {
      * @return True iff searchVal is found in the set.
      */
     public boolean contains(String searchVal) {
-        return true;
+        return this.collection.contains(searchVal);
     }
 
     /**
@@ -41,13 +41,13 @@ public class CollectionFacadeSet implements SimpleSet {
      * @return True iff toDelete is found and deleted.
      */
     public boolean delete(String toDelete) {
-        return true;
+        return this.collection.remove(toDelete);
     }
 
     /**
      * @return The number of elements currently in the set.
      */
     public int size() {
-        return 0;
+        return this.collection.size();
     }
 }

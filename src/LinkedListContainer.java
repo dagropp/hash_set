@@ -47,6 +47,7 @@ public class LinkedListContainer {
      */
     public boolean contains(String item) {
         // Goes over the list items, and if value is equal to any, returns true.
+//        return this.list.contains(item); // -- slower
         for (Object listItem : this.list)
             if (listItem.equals(item))
                 return true;

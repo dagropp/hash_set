@@ -3,6 +3,7 @@
  */
 public class ClosedHashSet extends SimpleHashSet {
     private String[] table = new String[INITIAL_CAPACITY];
+    private boolean[] ignoreList = new boolean[INITIAL_CAPACITY];
     private int elementCounter = 0;
 
     /**
@@ -49,6 +50,8 @@ public class ClosedHashSet extends SimpleHashSet {
             // If index is null, assign item to index and return true.
             if (this.table[index] == null) {
                 this.table[index] = newValue;
+                if (this.ignoreList[index])
+                    this.ignoreList[index] = false; // If index in ignore list, remove it from there.
                 this.elementCounter++; // Appends element counter by 1;
                 this.attemptResize(this.shouldIncrease(), true); // Checks if increase-resizing is needed.
                 return true;
@@ -70,7 +73,9 @@ public class ClosedHashSet extends SimpleHashSet {
         for (int i = 0; i < this.table.length; i++) {
             int index = this.clamp(this.hash(searchVal, i)); // Clamps string hash code to fit array index.
             // Null slot reached, item not in table, return false.
-            if (this.table[index] == null)
+            if (this.ignoreList[index])
+                continue;
+            else if (this.table[index] == null)
                 return false;
                 // Index equals search val, item found, return true.
             else if (this.table[index].equals(searchVal))
@@ -89,14 +94,17 @@ public class ClosedHashSet extends SimpleHashSet {
         for (int i = 0; i < this.table.length; i++) {
             int index = this.clamp(this.hash(toDelete, i)); // Clamps string hash code to fit array index.
             // Null slot reached, item not in table therefore cannot be deleted, return false.
-            if (this.table[index] == null)
+            if (this.ignoreList[index])
+                continue;
+            else if (this.table[index] == null)
                 return false;
                 // Index equals search val, item found: delete it, re-hash table and return true.
             else if (this.table[index].equals(toDelete)) {
                 this.table[index] = null; // Delete index value.
+                this.ignoreList[index] = true;
                 this.elementCounter--; // Removes 1 from element counter.
                 this.attemptResize(this.shouldDecrease(), false); // Checks if decrease-resizing is needed.
-                this.rehashTable(this.table.length); // Initialize and re-hash table in dedicated function.
+//                this.rehashTable(this.table.length); // Initialize and re-hash table in dedicated function.
                 return true;
             }
         }
@@ -152,6 +160,7 @@ public class ClosedHashSet extends SimpleHashSet {
      */
     private void rehashTable(int newCapacity) {
         String[] previousTable = this.assignTableElementsToArray(); // Assign current table elements to array.
+        this.ignoreList = new boolean[newCapacity];
         this.table = new String[newCapacity]; // Creates new empty table with specified capacity.
         this.addNoDuplicatesArray(previousTable); // Adds and re-hashes all previous table's elements to new table.
     }
