@@ -1,0 +1,99 @@
+dgropp
+
+
+
+
+=============================
+=      File description     =
+=============================
+- SimpleHashSet -
+    A superclass for implementations of hash-sets implementing the SimpleSet interface.
+- OpenHashSet -
+    A hash-set based on chaining. Extends SimpleHashSet. Note: the capacity of a chaining based hash-set is simply the
+    number of buckets (the length of the array of lists).
+- ClosedHashSet -
+    A hash-set based on closed-hashing with quadratic probing. Extends SimpleHashSet.
+- CollectionFacadeSet -
+    Wraps an underlying Collection and serves to both simplify its API and give it a common type with the implemented
+    SimpleHashSets.
+- LinkedListContainer -
+    A wrapper class that holds LinkedList<String> and delegates methods to it, to have an array of that class instead
+    of LinkedList[] array (which is illegal in Java).
+- SimpleSetPerformanceAnalyzer -
+    Has a main method that measures the run-times requested in the "Performance Analysis" section.
+
+
+
+=============================
+=          Design           =
+=============================
+- Inheritance -
+    We were asked to create 6 different SpaceShips, each with different behaviour. Despite the differences, most ships
+    share many common qualities - if not with all other ships, then with some. I decided to make this class parent to
+    all other SpaceShip classes. This class holds all SpaceShip methods that are shared by custom SpaceShips,
+    and later if any modifications are needed, some methods will be overridden. Upon construction, the only difference
+    between the classes is the image path given (except for ShipSpecial that is assigned a target).
+- Abstraction -
+    It was clear that there should be no "general" SpaceShip, so this class is not supposed to be initiated. But, as
+    explained above this class holds general methods that apply to all SpaceShips, so I decided to make it abstract.
+    Also, the main (but not only) difference between custom SpaceShips is how, when, why and which actions to perform.
+    To deal with it, I defined an abstract method in SpaceShip that is to be implemented in each child class in itself.
+- Extensibility -
+    As explained above, by defining general actions and behaviours in SpaceShip parent abstract class, each custom
+    SpaceShip class holds the unique behaviours and actions of this spaceship. Thus, if one wanted to update general
+    actions and behaviours, it should be done in SpaceShip class, and updating unique actions and behaviours should be
+    done in the child classes. Also, this structure makes it easy to add new custom SpaceShip classes.
+- Modularity -
+    As explained above, each special ship has a distinct class extending the general SpaceShip class. Also, in all
+    classes, each action/test/calculation is done with its own (usually private) method. All relevant info (numbers,
+    paths, etc.) are held as private class constants, thus it's easier to update and understand them.
+- Minimal API -
+    All classes members are private. All methods that were not pre-defined in the given API are private when optional
+    (helper methods and methods to be used by child class), and protected when necessary to share between SpaceShip and
+    its children (setters, getters, etc.).
+
+
+
+=============================
+=  Implementation details   =
+=============================
+- Implementing OpenHashSet -
+    I implemented a wrapper class that holds LinkedList buckets, called LinkedListContainer. In OpenHashSet, I assigned
+    the table to be an array of LinkedListContainer. Each added item is clamped using (hashCode & capacity), and if not
+    existent already constructs a new LinkedListContainer bucket or adds to existent bucket. For each addition/deletion
+    the element counter is updated, thus controlling set size very easily.
+    The wrapper class is constructed with 1 element, meaning there is no scenario where the table array holds an empty
+    bucket - buckets that are empty are null.
+    In the wrapper class I implemented 'add' method to add items, 'contains' to search for item in the bucket (didn't
+    use LinkedList 'contains' method, as it appears to be slower than just iterating over the list, as the buckets are
+    normally low in size), 'find and delete' method to find item in bucket and remove it if found.
+    Each resize the LinkedListContainer array is reinitialized and re-hashed all table elements back to bucket. To do so
+    I copy the table elements (ignoring null buckets) to a temporary array and then re-hash all elements back to the new
+    table, without searching for duplicates, as elements are certain to be unique. The new capacity in each resize is
+    calculated as power of 2.
+- Implementing ClosedHashSet -
+    I assigned the table as a String array. Each added item is clamped using an iteration from 0 to capacity and check
+    for each index if ((hashCode + (i + i^2) / 2) & capacity) is null (quadratic probing). If so assign the element to
+    index, if not continue iterating until found. As table capacity is in powers of 2, and empty slot is guaranteed to
+    be found if table is not full. For each addition/deletion the element counter is updated, thus controlling set size
+    very easily.
+    Also, I initialized a primitive boolean array the size of the table capacity, that holds deleted indexes to ignore
+    later on. On each deletion, the index that was deleted is marked as 'true' in the ignore list, thus when trying to
+    find item in table, method will ignore this index and continue searching, and not stop once reached null index. When
+    adding item, if found null index that is on the ignore list, fills this index and removes it from the ignore list.
+    The ignore list was created to deal with delete issues. At first, on each deletion I re-hashed the whole table which
+    was time consuming. I also revoked the use of flagging the deleted index, as that would limit the table's
+    functionality, as it will limit certain values additions. Using TreeSet or any other permitted Collection was not
+    optimal as it would cause run-time issues on each addition (to check if index is contained in Collection). Thus, I
+    decided on a primitive array, as it is the most space efficient way I found to use, and the run-time for each check
+    is O(1).
+    Each resize the table array is reinitialized and re-hashed all table elements. To do so I copy the table elements
+    (ignoring null indexes) to a temporary array and then re-hash all elements back to the new table, without searching
+    for duplicated, as elements are certain to be unique. The new capacity in each resize is calculated as power of 2.
+    Also, on each resize the ignore list is reinitialized with the new table capacity.
+
+
+=============================
+=    Answers to questions   =
+=============================
+No questions for this exercise.

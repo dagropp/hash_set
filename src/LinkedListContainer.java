@@ -47,7 +47,6 @@ public class LinkedListContainer {
      */
     public boolean contains(String item) {
         // Goes over the list items, and if value is equal to any, returns true.
-//        return this.list.contains(item); // -- slower
         for (Object listItem : this.list)
             if (listItem.equals(item))
                 return true;
@@ -67,17 +66,5 @@ public class LinkedListContainer {
                 // If found removes item with LinkedList method that returns boolean value.
                 return this.list.remove(listArticle);
         return false; // If item not found.
-    }
-
-
-    @Override
-    public String toString() {
-        String result = "";
-        int num = 0;
-        for (Object item : list) {
-            num++;
-            result += " (" + num + ") " + item;
-        }
-        return result + " / TOTAL: " + num;
     }
 }

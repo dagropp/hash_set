@@ -53,14 +53,18 @@ public class OpenHashSet extends SimpleHashSet {
         // If item exists in table, do nothing and return false.
         if (this.itemInList(newValue, index))
             return false;
-            // If index is null, creates new linked list container.
+        this.elementCounter++; // Item not in table. Appends element counter by 1.
+        // Checks if increasing table is needed, if so call method and resize/re-hash table, also with new value.
+        if (this.shouldIncrease()) {
+            this.attemptResize(true, newValue);
+            return true;
+        }
+        // If index is null, creates new linked list container.
         else if (this.table[index] == null)
             this.table[index] = new LinkedListContainer(newValue);
             // Index has existing list with items that do not much new value. Adds item to list and return true.
         else
             this.table[index].addItem(newValue);
-        this.elementCounter++; // Appends element counter by 1;
-        this.attemptResize(this.shouldIncrease(), this.getLowerLoadFactor()); // Checks if increase-resizing is needed.
         return true;
     }
 
@@ -89,7 +93,8 @@ public class OpenHashSet extends SimpleHashSet {
                 this.table[index] = null;
             this.elementCounter--; // Removes 1 from element counter.
             // Checks if resizing is needed (decrease), and if so decrease table with dedicated method.
-            this.attemptResize(this.shouldDecrease(), this.getUpperLoadFactor());
+            if (shouldDecrease())
+                this.attemptResize(false, toDelete);
             return true;
         }
         return false;
@@ -141,19 +146,17 @@ public class OpenHashSet extends SimpleHashSet {
      * capacity, based on (elements number / load factor), creates new table with specified capacity, and adds and
      * re-hashes all the previous elements to the new table.
      *
-     * @param shouldResize Based on shouldIncrease/shouldDecrease methods from SimpleHashSet,
-     *                     that checks if resizing is needed.
-     * @param loadFactor   Which load factor to base new capacity by:
-     *                     Lower load factor for increasing, Upper load factor for decreasing.
+     * @param increase True if increase is performed, False if decrease.
+     * @param lastItem Item that was added/deleted before table resize.
      */
-    private void attemptResize(boolean shouldResize, float loadFactor) {
-        // Checks if resize is needed.
-        if (shouldResize) {
-            int newCapacity = Math.round(this.size() / loadFactor); // New capacity based on (size / load factor).
-            String[] previousTable = this.assignTableElementsToArray(); // Assign current table elements to array.
-            this.table = new LinkedListContainer[newCapacity]; // Creates new empty table with specified capacity.
-            this.addNoDuplicatesArray(previousTable); // Adds and re-hash all previous table's elements to new table.
-        }
+    private void attemptResize(boolean increase, String lastItem) {
+        // New capacity based on (capacity * 2) for increase, (capacity / 2) for decrease.
+        int newCapacity = increase ? this.table.length * 2 : this.table.length / 2;
+        String[] previousTable = this.assignTableElementsToArray(); // Assign current table elements to array.
+        // If increase, assign item that was added before resize to last place on the array.
+        if (increase) previousTable[previousTable.length - 1] = lastItem;
+        this.table = new LinkedListContainer[newCapacity]; // Creates new empty table with specified capacity.
+        this.addUniqueArray(previousTable); // Adds and re-hash all previous table's elements to new table.
     }
 
     /**
@@ -179,25 +182,18 @@ public class OpenHashSet extends SimpleHashSet {
      *
      * @param tempTable Array representation of the previous table String elements before resizing.
      */
-    private void addNoDuplicatesArray(String[] tempTable) {
-        for (String item : tempTable) {
-            int index = this.clamp(this.hash(item)); // Clamps string hash code to fit array index.
-            // If index is null, creates new linked list container.
-            if (this.table[index] == null)
-                this.table[index] = new LinkedListContainer(item);
-                // Index has existing list with items that do not much new value. Adds item to list.
-            else
-                this.table[index].addItem(item);
-        }
+    private void addUniqueArray(String[] tempTable) {
+        for (String item : tempTable)
+            this.addUnique(item);
     }
 
-    @Override
-    public String toString() {
-        String result = "Hash set content (" + this.size() + " elements):\n";
-        for (int i = 0; i < this.table.length; i++)
-            if (this.table[i] != null)
-                result += "Index " + i + ": " + this.table[i] + "\n";
-        return result + "\nTOTAL CELLS: " + this.capacity() + " / TOTAL ELEMENTS: " + this.size() +
-                " / LOAD FACTOR: " + (float) this.size() / (float) this.capacity();
+    private void addUnique(String item) {
+        int index = this.clamp(this.hash(item)); // Clamps string hash code to fit array index.
+        // If index is null, creates new linked list container.
+        if (this.table[index] == null)
+            this.table[index] = new LinkedListContainer(item);
+            // Index has existing list with items that do not much new value. Adds item to list.
+        else
+            this.table[index].addItem(item);
     }
 }

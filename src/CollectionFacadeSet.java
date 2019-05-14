@@ -21,7 +21,9 @@ public class CollectionFacadeSet implements SimpleSet {
      * @return False iff newValue already exists in the set.
      */
     public boolean add(String newValue) {
-        return this.collection.add(newValue);
+        if (!this.contains(newValue))
+            return this.collection.add(newValue);
+        return false;
     }
 
     /**
