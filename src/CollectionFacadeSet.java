@@ -3,7 +3,10 @@
  * with the implemented SimpleHashSets.
  */
 public class CollectionFacadeSet implements SimpleSet {
-    protected java.util.Collection<String> collection;
+    /* Class members - variables */
+    protected java.util.Collection<String> collection; // Facade Collection.
+
+    /* Constructors */
 
     /**
      * Creates a new facade wrapping the specified collection.
@@ -13,6 +16,8 @@ public class CollectionFacadeSet implements SimpleSet {
     public CollectionFacadeSet(java.util.Collection<String> collection) {
         this.collection = collection;
     }
+
+    /* Public instance Methods */
 
     /**
      * Add a specified element to the set if it's not already in it.

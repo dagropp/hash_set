@@ -6,7 +6,7 @@ import java.util.LinkedList;
  */
 public class LinkedListContainer {
     /* Class members - variables */
-    private LinkedList<String> list;
+    private LinkedList<String> container;
 
     /* Constructors */
 
@@ -14,10 +14,10 @@ public class LinkedListContainer {
      * Constructor for LinkedListContainer object, that creates a new Linked List that holds 1 item,
      * and will expand with later additions.
      *
-     * @param item String to add to list.
+     * @param item String to add to container.
      */
     public LinkedListContainer(String item) {
-        this.list = new LinkedList<>();
+        this.container = new LinkedList<>();
         this.addItem(item);
     }
 
@@ -26,29 +26,29 @@ public class LinkedListContainer {
     /**
      * @return The Linked List object.
      */
-    public LinkedList getList() {
-        return this.list;
+    public LinkedList getContainer() {
+        return this.container;
     }
 
     /**
-     * Adds item to list.
+     * Adds item to container.
      *
-     * @param item String to add to list.
+     * @param item String to add to container.
      */
     public void addItem(String item) {
-        this.list.add(item);
+        this.container.add(item);
     }
 
     /**
-     * Checks if String item already exits in list (based on value).
+     * Checks if String item already exits in container (based on value).
      *
-     * @param item String to check if is in list.
-     * @return True if String already in list, false otherwise.
+     * @param item String to check if is in container.
+     * @return True if String already in container, false otherwise.
      */
     public boolean contains(String item) {
-        // Goes over the list items, and if value is equal to any, returns true.
-        for (Object listItem : this.list)
-            if (listItem.equals(item))
+        // Goes over the container items, and if value is equal to any, returns true.
+        for (Object containerItem : this.container)
+            if (containerItem.equals(item))
                 return true;
         return false;
     }
@@ -56,15 +56,15 @@ public class LinkedListContainer {
     /**
      * Attempts to find item doomed to be deleted. If found, removes item.
      *
-     * @param item String to remove from list.
+     * @param item String to remove from container.
      * @return True if item found and removed, false if otherwise.
      */
     public boolean findAndDelete(String item) {
-        // Iterates over list to find specified item.
-        for (String listArticle : this.list)
-            if (listArticle.equals(item))
+        // Iterates over container to find specified item.
+        for (String containerItem : this.container)
+            if (containerItem.equals(item))
                 // If found removes item with LinkedList method that returns boolean value.
-                return this.list.remove(listArticle);
+                return this.container.remove(containerItem);
         return false; // If item not found.
     }
 }

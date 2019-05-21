@@ -5,53 +5,47 @@ import java.util.*;
  */
 public class SimpleSetPerformanceAnalyzer {
     /* UI menu constant variables */
-    private static final char[] INPUT_OPTIONS = {'1', '2', '3', '4', '5', '6', 'a', 'q'};
+    private static final char[] INPUT_OPTIONS = {'1', '2', '3', '4', '5', '6', 'a', 'q'}; // Valid input characters.
+    // User message at beginning of UI.
     private static final String OPTIONS_MENU =
             "CHOOSE WHICH TEST\\S TO PERFORM: TO CHOOSE TESTS PRESS THEIR NUMBERS (NO SPACES), TO CHOOSE ALL TESTS " +
-                    "PRESS 'a', TO QUIT PRESS 'q'.\n(EXAMPLE: 145 WILL PERFORM TESTS 1, 4, 5)" +
-                    "\n*****************************************";
-    private static final String INPUT_HELPER =
-            "*****************************************\nYOUR INPUT: ";
-    private static final String INPUT_ERROR = "WRONG INPUT\n";
+                    "PRESS 'a', TO QUIT PRESS 'q'\n*****************************************";
+    // User message that asks for input.
+    private static final String INPUT_HELPER = "*****************************************\n" +
+            "YOUR INPUT <<EXAMPLE:  145  WILL PERFORM TESTS 1, 4, 5>> ";
+    private static final String INPUT_ERROR = "INVALID INPUT\n"; // User message that alerts invalid input.
     /* General tests constant variables */
-    private static final int NANO_TO_MS = 1000000;
+    private static final int NANO_TO_MS = 1000000; // Conversion unit between nanoseconds and milliseconds.
+    // Number of times 'contains' method is tested on each data-struct test (except LinkedList).
     private static final int CONTAINS_ITERATION_GENERAL = 70000;
+    // Number of times 'contains' method is tested on each LinkedList data-struct test.
     private static final int CONTAINS_ITERATION_LINKED_LIST = 7000;
-    private static final int LINKED_LIST_INDEX = 3;
+    private static final String MILLISECONDS = " ms."; // Milliseconds string representation.
+    private static final String NANOSECONDS = " ns."; // Nanoseconds string representation.
+    // Index of all data-structs and their tests numbers.
     private static final String DATA_STRUCTS_INDEX =
             "(1) OpenHashSet (2) ClosedHashSet (3) Java TreeSet (4) Java LinkedList (5) Java HashSet";
-    private static final String MILLISECONDS = " ms.";
-    private static final String NANOSECONDS = " ns.";
     /* Test 1 constant variables */
-    private static final String TEST1_MSG =
-            "TEST 1: Time it takes (ms) to insert 'data1' to all data structures.";
+    private static final String TEST1_MSG = "TEST 1: add('data1') to all data-structures."; // Test 1 message.
     /* Test 2 constant variables */
-    private static final String TEST2_MSG =
-            "TEST 2: Time it takes (ms) to insert 'data2' to all data structures";
+    private static final String TEST2_MSG = "TEST 2: add('data2') to all data-structures."; // Test 2 message.
     /* Test 3 constant variables */
-    private static final String TEST3_MSG =
-            "TEST 3: Time it takes (ns) to check if \"hi\" is contained in all data structures initialized " +
-                    "with 'data1'.";
-    private static final String TEST3_VALUE = "hi";
+    private static final String TEST3_MSG = "TEST 3: contains(\"hi\") in 'data1'."; // Test 3 message.
+    private static final String TEST3_VALUE = "hi"; // Test 3 and 6 value.
     /* Test 4 constant variables */
-    private static final String TEST4_MSG =
-            "TEST 4: Time it takes (ns) to check if \"-13170890158\" is contained in all data structures " +
-                    "initialized with 'data1'.";
-    private static final String TEST4_VALUE = "-13170890158";
+    private static final String TEST4_MSG = "TEST 4: contains(\"-13170890158\") in 'data1'."; // Test 4 message.
+    private static final String TEST4_VALUE = "-13170890158"; // Test 4 value.
     /* Test 5 constant variables */
-    private static final String TEST5_MSG =
-            "TEST 5: Time it takes (ns) to check if \"23\" is contained in all data structures initialized " +
-                    "with 'data2'.";
-    private static final String TEST5_VALUE = "23";
+    private static final String TEST5_MSG = "TEST 5: contains(\"23\") in 'data2'."; // Test 5 message.
+    private static final String TEST5_VALUE = "23"; // Test 5 value.
     /* Test 6 constant variables */
-    private static final String TEST6_MSG =
-            "TEST 6: Time it takes (ns) to check if \"hi\" is contained in all data structures initialized " +
-                    "with 'data2'.";
+    private static final String TEST6_MSG = "TEST 6: contains(\"hi\") in 'data2'."; // Test 6 message.
     /* Data structures SimpleSet array */
-    private static SimpleSet[] dataStructs = initDataStructsArray();
+    private static SimpleSet[] dataStructs = initDataStructsArray(); // Array holding all relevant data-structs.
+    private static final int LINKED_LIST_INDEX = 3; // Index in said array were LinkedList is stored.
     /* Data lists arrays */
-    private static final String[] data1 = Ex4Utils.file2array("data1.txt");
-    private static final String[] data2 = Ex4Utils.file2array("data2.txt");
+    private static final String[] data1 = Ex4Utils.file2array("data1.txt"); // Array holding data1.txt values.
+    private static final String[] data2 = Ex4Utils.file2array("data2.txt"); // Array holding data2.txt values.
 
     /**
      * Main method that initializes the user menu to choose between tests.
@@ -59,21 +53,7 @@ public class SimpleSetPerformanceAnalyzer {
      * @param args Command line args - not used.
      */
     public static void main(String[] args) {
-//        OpenHashSet test = new OpenHashSet(1f, 0.5f);
-//        String[] tempData = {
-//                "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
-//                "u", "v", "w", "x", "y", "z"
-//        };
-//        OpenHashSet test = new OpenHashSet();
-//        addAll(data2, test);
-//        System.out.println((float)test.capacity()/16);
-//        printMenu(); // Calls method that prints user menu.
-        ClosedHashSet test = new ClosedHashSet(1f, 0.5f);
-        addAll(data2, test);
-        System.out.println(test.size());
-        for (String s : data2)
-            System.out.println("Delete: " + test.delete(s) + " Size: " + test.size() + " Capacity: " +
-                    test.capacity() + " Load Factor: " + (float) test.size() / test.capacity());
+        printMenu(); // Calls method that prints user menu.
     }
 
     /**
@@ -90,7 +70,6 @@ public class SimpleSetPerformanceAnalyzer {
         String choice = input.nextLine(); // Assign input to string.
         // If input is valid, run specified tests.
         if (validateInput(choice)) {
-            System.out.println(DATA_STRUCTS_INDEX);
             for (int i = 0; i < choice.length(); i++)
                 performTests(choice.charAt(i));
             // Input not valid, prints error message and ask for input again.
@@ -98,6 +77,7 @@ public class SimpleSetPerformanceAnalyzer {
             System.out.println(INPUT_ERROR);
             printMenu();
         }
+        System.out.println(DATA_STRUCTS_INDEX);
     }
 
     /**
@@ -160,6 +140,8 @@ public class SimpleSetPerformanceAnalyzer {
             case 'a':
                 runAllTests();
                 break;
+            case 'q':
+                System.exit(0);
         }
     }
 
@@ -170,7 +152,7 @@ public class SimpleSetPerformanceAnalyzer {
      * @param testResult Given test time result.
      * @param unit       Time unit (Milliseconds/Nanoseconds) test was performed at.
      */
-    private static void printTest(String testMsg, float[] testResult, String unit) {
+    private static void printTest(String testMsg, long[] testResult, String unit) {
         System.out.println(testMsg); // Prints test explanation message.
         // Prints each data-struct test result.
         for (int i = 0; i < testResult.length; i++)
@@ -240,7 +222,7 @@ public class SimpleSetPerformanceAnalyzer {
      */
     private static void testAdd(String[] dataList, String testMsg) {
         dataStructs = initDataStructsArray(); // Re-initializes data-structs array.
-        float[] result = new float[dataStructs.length]; // Assign float array to hold test results.
+        long[] result = new long[dataStructs.length]; // Assign long array to hold test results.
         // Measure run-time for 'add' method for each data-struct, and assign result to result array.
         for (int i = 0; i < dataStructs.length; i++)
             result[i] = measureAdd(dataList, dataStructs[i]);
@@ -254,11 +236,11 @@ public class SimpleSetPerformanceAnalyzer {
      * @param dataStruct The specified data-struct to add data to.
      * @return Number of milliseconds process took.
      */
-    private static float measureAdd(String[] dataList, SimpleSet dataStruct) {
+    private static long measureAdd(String[] dataList, SimpleSet dataStruct) {
         long timeBefore = System.nanoTime(); // Measure time before process started.
         addAll(dataList, dataStruct); // Adds array elements to data-struct with dedicated method.
         // Returns the time difference, converted to milliseconds.
-        return (float) (System.nanoTime() - timeBefore) / NANO_TO_MS;
+        return (System.nanoTime() - timeBefore) / NANO_TO_MS;
     }
 
     /**
@@ -281,7 +263,7 @@ public class SimpleSetPerformanceAnalyzer {
      */
     private static void testContains(String[] dataList, String item, String testMsg) {
         dataStructs = initDataStructsArray(); // Re-initializes data-structs array.
-        float[] result = new float[dataStructs.length]; // Assign float array to hold test results.
+        long[] result = new long[dataStructs.length]; // Assign long array to hold test results.
         for (int i = 0; i < dataStructs.length; i++) {
             addAll(dataList, dataStructs[i]); // Adds data-list items to each data-struct.
             // If data-struct is LinkedList, call dedicated method that measures LinkedList 'contains' run-time.
@@ -302,15 +284,15 @@ public class SimpleSetPerformanceAnalyzer {
      * @param item       Item to check if contains in the data-struct.
      * @return Number of nanoseconds process took.
      */
-    private static float measureContainsGeneral(SimpleSet dataStruct, String item) {
+    private static long measureContainsGeneral(SimpleSet dataStruct, String item) {
         // Perform 'contains' method 70,000 times before measuring, according to exercise description.
-        for (int i = 0; i < CONTAINS_ITERATION_GENERAL; i++)
+        for (int preTest = 0; preTest < CONTAINS_ITERATION_GENERAL; preTest++)
             dataStruct.contains(item);
         long timeBefore = System.nanoTime(); // Measure time before process started.
-        for (int i = 0; i < CONTAINS_ITERATION_GENERAL; i++)
+        for (int test = 0; test < CONTAINS_ITERATION_GENERAL; test++)
             dataStruct.contains(item); // Perform 'contains' method 70,000 times.
         // Returns the time difference, divided by number of iterations (70,000).
-        return (float) (System.nanoTime() - timeBefore) / CONTAINS_ITERATION_GENERAL;
+        return (System.nanoTime() - timeBefore) / CONTAINS_ITERATION_GENERAL;
 
     }
 
@@ -321,12 +303,12 @@ public class SimpleSetPerformanceAnalyzer {
      * @param item       Item to check if contains in the data-struct.
      * @return Number of nanoseconds process took.
      */
-    private static float measureContainsLinkedList(SimpleSet dataStruct, String item) {
+    private static long measureContainsLinkedList(SimpleSet dataStruct, String item) {
         long timeBefore = System.nanoTime(); // Measure time before process started.
-        for (int i = 0; i < CONTAINS_ITERATION_LINKED_LIST; i++)
+        for (int test = 0; test < CONTAINS_ITERATION_LINKED_LIST; test++)
             dataStruct.contains(item); // Perform 'contains' method 7,000 times.
         // Returns the time difference, divided by number of iterations (7,000).
-        return (float) (System.nanoTime() - timeBefore) / CONTAINS_ITERATION_LINKED_LIST;
+        return (System.nanoTime() - timeBefore) / CONTAINS_ITERATION_LINKED_LIST;
     }
 
     /**

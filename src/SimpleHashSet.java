@@ -7,11 +7,11 @@ public abstract class SimpleHashSet implements SimpleSet {
     protected static final float DEFAULT_HIGHER_CAPACITY = 0.75f;
     // Describes the lower load factor of a newly created hash set
     protected static final float DEFAULT_LOWER_CAPACITY = 0.25f;
-    // Describes the capacity of a newly created hash set.
-    protected static final int INITIAL_CAPACITY = 16;
+    protected static final int INITIAL_CAPACITY = 16; // Describes the capacity of a newly created hash set.
+    private static final int MIN_CAPACITY = 1; // Hash set minimum capacity.
     /* Class members - variables */
-    private float upperLoadFactor;
-    private float lowerLoadFactor;
+    private float upperLoadFactor; // Higher load factor of a this hash set.
+    private float lowerLoadFactor; // Lower load factor of a this hash set.
 
     /* Constructors */
 
@@ -74,7 +74,7 @@ public abstract class SimpleHashSet implements SimpleSet {
      * @return True if (current load factor > upper load factor): should increase. False otherwise.
      */
     protected boolean shouldIncrease() {
-        return this.getCurrentLoadFactor() > this.upperLoadFactor;
+        return this.getCurrentLoadFactor() > this.getUpperLoadFactor();
     }
 
     /**
@@ -83,8 +83,48 @@ public abstract class SimpleHashSet implements SimpleSet {
      * @return True if (current load factor < lower load factor): should decrease. False otherwise.
      */
     protected boolean shouldDecrease() {
-        return this.getCurrentLoadFactor() < this.lowerLoadFactor && this.capacity() > 1;
+        return this.getCurrentLoadFactor() < this.getLowerLoadFactor() && this.capacity() > MIN_CAPACITY;
     }
+
+    /**
+     * Attempts to resize the table. Assigns new table capacity, based on size divided/multiplied in 2 (capacity must
+     * be in powers of 2), creates new table with specified capacity, and adds and re-hashes all the previous elements
+     * to the new table.
+     *
+     * @param increase True if increase is performed, False if decrease.
+     * @param lastItem Item that was added/deleted before table resize.
+     */
+    protected void resize(boolean increase, String lastItem) {
+        // New capacity based on (capacity * 2) for increase, (capacity / 2) for decrease.
+        int newCapacity = increase ? this.capacity() * 2 : this.capacity() / 2;
+        String[] previousTable = this.assignTableElementsToArray(); // Assign current table elements to array.
+        // If increase, assign item that was added before resize to last place on the array.
+        if (increase) previousTable[previousTable.length - 1] = lastItem;
+        this.newTable(newCapacity); // Creates new empty table with specified capacity.
+        this.addUniqueArray(previousTable); // Adds and re-hash all previous table's elements to new table.
+    }
+
+    /**
+     * Reinitialize hash table based on new capacity.
+     *
+     * @param newCapacity New table capacity.
+     */
+    protected abstract void newTable(int newCapacity);
+
+    /**
+     * Creates an array representation of the current table elements (no duplicates, no null).
+     *
+     * @return Array that contains all String elements in the current table.
+     */
+    protected abstract String[] assignTableElementsToArray();
+
+    /**
+     * Adds String element (no duplicates, no null) to new resized table.
+     *
+     * @param item Element to add.
+     */
+    protected abstract void addUnique(String item);
+
 
     /* Private instance Methods */
 
@@ -93,5 +133,15 @@ public abstract class SimpleHashSet implements SimpleSet {
      */
     private float getCurrentLoadFactor() {
         return (float) this.size() / (float) this.capacity();
+    }
+
+    /**
+     * Adds and re-hashes previous table String elements (no duplicates, no null) to new resized table.
+     *
+     * @param tempTable Array representation of the previous table String elements before resizing.
+     */
+    private void addUniqueArray(String[] tempTable) {
+        for (String item : tempTable)
+            this.addUnique(item);
     }
 }
